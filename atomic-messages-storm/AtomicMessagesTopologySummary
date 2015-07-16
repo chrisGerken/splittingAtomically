@@ -1,0 +1,33 @@
+digraph G { 
+node [style=filled, fillcolor=plum1 ,shape=rectangle, fontsize=20, color=black];
+edge [fontsize=10, color=blue4, fontcolor=blue4];
+
+Legalese [style=filled, fillcolor=floralwhite ,fontsize=20,color=black,label="{Atomic Messages|(c) 2015 Chris Gerken}", shape=record];
+
+NewMessages [style=filled, fillcolor=mintcream ,fontsize=18,color=black,label="{NewMessages}", shape=record];
+OldMessages [style=filled, fillcolor=mintcream ,fontsize=18,color=black,label="{OldMessages}", shape=record];
+SplitMessages [style=filled, fillcolor=mintcream ,fontsize=18,color=black,label="{SplitMessages}", shape=record];
+AtomicMessages [style=filled, fillcolor=mintcream ,fontsize=18,color=black,label="{AtomicMessages}", shape=record];
+"Generator (1)"  [shape=invhouse] ;
+"Message Reader (1)"  [shape=invhouse] ;
+"Message Splitter (4)"  [shape=ellipse, fillcolor=palegoldenrod] ;
+"Message Writer (2)"  [shape=ellipse, fillcolor=palegoldenrod] ;
+"Message Aggregator (1)"  [shape=ellipse, fillcolor=palegoldenrod] ;
+
+"Generator (1)" -> NewMessages  [penwidth=10];
+"Message Reader (1)" -> OldMessages  [penwidth=10];
+"Message Splitter (4)" -> SplitMessages  [penwidth=10];
+"Message Splitter (4)" -> AtomicMessages  [penwidth=10];
+
+NewMessages -> "Message Splitter (4)"  [penwidth=8, label="    grouping: shuffle"];
+OldMessages -> "Message Splitter (4)"  [penwidth=8, label="    grouping: shuffle"];
+SplitMessages -> "Message Writer (2)"  [penwidth=8, label="    grouping: shuffle"];
+AtomicMessages -> "Message Aggregator (1)"  [penwidth=8, label="    grouping: shuffle"];
+
+Legalese -> "Generator (1)" [style=invis, len=30]
+
+}
+
+
+
+

@@ -1,0 +1,1 @@
+java -cp target/atomic-messages-storm-1.0.0-SNAPSHOT-jar-with-dependencies.jar -Djava.util.logging.config.file=src/main/resources/logging.properties org.atomsg.topology.AtomicMessagesTopology 
