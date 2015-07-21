@@ -82,8 +82,16 @@
 	    	<version>0.8.1.1</version>
 	    	<exclusions>
 	    		<exclusion>
-	    			<artifactId>log4j</artifactId>
-	    			<groupId>log4j</groupId>
+	    			<artifactId>jms</artifactId>
+	    			<groupId>javax.jms</groupId>
+	    		</exclusion>
+	    		<exclusion>
+	    			<artifactId>jmxtools</artifactId>
+	    			<groupId>com.sun.jdmk</groupId>
+	    		</exclusion>
+	    		<exclusion>
+	    			<artifactId>jmxri</artifactId>
+	    			<groupId>com.sun.jmx</groupId>
 	    		</exclusion>
 	    	</exclusions>
 	    </dependency>

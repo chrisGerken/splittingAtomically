@@ -283,7 +283,7 @@ public class AbstractSimpleConsumer {
     /*
      * Retrieves the previously committed offset. If no offset has been committed, yet, a -1 is returned.
      */
-	private long retrieveOffset() throws PartitionConsumerException {
+	public long retrieveOffset() throws PartitionConsumerException {
     	
         List<TopicAndPartition> requestInfo = new ArrayList<TopicAndPartition>();
         TopicAndPartition topicAndPartition = new TopicAndPartition(topic, partition);

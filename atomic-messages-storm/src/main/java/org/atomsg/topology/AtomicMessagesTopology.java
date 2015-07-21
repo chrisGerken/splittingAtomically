@@ -2,7 +2,9 @@ package org.atomsg.topology;
 
 	// Begin imports
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -50,14 +52,14 @@ public class AtomicMessagesTopology {
     		System.out.println("args["+i+"] = "+args[i]);
     	}
      
-    	if (args.length > 0 && TARGETS.contains(args[0])) {
-    		target = args[0];
-        } else if (args.length > 0) {
-        	System.out.println("Invalid target environment specified");
-        	return;
-        }
+//    	if (args.length > 0 && TARGETS.contains(args[0])) {
+//    		target = args[0];
+//        } else if (args.length > 0) {
+//        	// absolute filepath must have been specified
+//        	
+//        }
 
-        config = loadConfig(target);
+        config = loadConfig(args[0]);
         
         config.put("atomic.message.group", new Long(System.currentTimeMillis()));
 
@@ -122,7 +124,11 @@ public class AtomicMessagesTopology {
         Properties props = new Properties();
         Config config = new Config();
         try {
-            props.load(AtomicMessagesTopology.class.getResourceAsStream("/" + env + ".properties"));
+        	InputStream is = AtomicMessagesTopology.class.getResourceAsStream("/" + env + ".properties");
+        	if (is == null) {
+        		is = new FileInputStream(env);
+        	}
+           props.load(is);
            for (Object prop : props.keySet()) {
 				Object value = props.get(prop);
 				try {
