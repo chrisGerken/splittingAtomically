@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.atomsg.bean.Message;
 import org.atomsg.spout.IGeneratorSpout;
+import org.atomsg.topic.AtomicMessage.AtomicMessageInfo;
 
 import backtype.storm.task.TopologyContext;
 
@@ -64,6 +65,9 @@ public class GeneratorSpoutLogic implements Serializable {
 
 			// Begin open() logic 
  
+    	String topic = (String) map.get("atomic.topic");
+    	AtomicMessageInfo.topicName = topic;
+    	
     	messageGroup = (Long) map.get("atomic.message.group");
     	currentId = 0L;
     	nextEmit = 0L;

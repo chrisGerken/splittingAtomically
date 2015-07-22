@@ -52,7 +52,7 @@ public class MessageSplitterBoltLogic implements Serializable {
     	}
 
     	Message other = new Message(m.getMessageGroup(),m.getCorrelationID(), m.getCreateTime(), m.getFullValue(), m.getCurrentValue());
-    	log.info("Splitting: "+m);
+    	log.debug("Splitting: "+m);
     	int value = m.getCurrentValue() / 2;
     	other.setCurrentValue(value);
     	bolt.emitToSplitMessages(other);

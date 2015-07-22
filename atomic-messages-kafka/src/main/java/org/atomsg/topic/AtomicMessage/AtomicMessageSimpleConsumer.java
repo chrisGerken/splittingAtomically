@@ -5,11 +5,10 @@ import java.nio.ByteBuffer;
 import kafka.message.MessageAndOffset;
 import kafka.utils.VerifiableProperties;
 
-import org.atomsg.model.AtomicMessage;
-import org.atomsg.serialization.LongCoder;
-import org.atomsg.serialization.AtomicMessageCoder;
-import org.atomsg.common.exception.PartitionConsumerException;
 import org.atomsg.common.internal.AbstractSimpleConsumer;
+import org.atomsg.model.AtomicMessage;
+import org.atomsg.serialization.AtomicMessageCoder;
+import org.atomsg.serialization.LongCoder;
 
 /**
  * AtomicMessageSimpleConsumer provides an iterator-link access to the messages on a single partition 
@@ -34,12 +33,12 @@ public class AtomicMessageSimpleConsumer extends AbstractSimpleConsumer {
 	  /**
 	   * Creates a simple consumer that reads from a single partition for topic AtomicMessage
 	   * 
-	   * @param csBrokerList A String containing a comma-separated list of hosts
-	   *  (e.g. 'host1,host2').  The hosts have running Kafka brokers.
+	   * @param csBrokerList A String containing a comma-separated list of hosts and ports
+	   *  (e.g. 'host1:9092,host2:9092').  The hosts have running Kafka brokers.
 	   * @param groupId Client group name.  Used to manage last-read offsets for partitions.
 	   */
-	public AtomicMessageSimpleConsumer(String csBrokerList, int port, int partition, String groupName) {
-		super(csBrokerList, port, AtomicMessageInfo.topicName, partition, groupName);
+	public AtomicMessageSimpleConsumer(String csBrokerList, int partition, String groupName) {
+		super(csBrokerList, AtomicMessageInfo.topicName, partition, groupName);
 	}
 
 	/**

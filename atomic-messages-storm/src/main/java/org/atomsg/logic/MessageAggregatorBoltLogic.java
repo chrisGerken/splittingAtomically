@@ -40,10 +40,10 @@ public class MessageAggregatorBoltLogic implements Serializable {
 			sum = message;
 		}
 		
-		log.info("c-id "+sum.getCorrelationID()+" has sum="+sum.getCurrentValue()+" of "+sum.getFullValue());
-		if (sum.getCurrentValue() == sum.getFullValue()) {
+		log.debug("c-id "+sum.getCorrelationID()+" has sum="+sum.getCurrentValue()+" of "+sum.getFullValue());
+		if (sum.getCurrentValue().intValue() == sum.getFullValue().intValue()) {
 			long dur = System.currentTimeMillis() - sum.getCreateTime();
-			log.error("Corelation ID "+message.getCorrelationID()+" aggregated after "+dur+" ms; "+(messages.size()-1)+" left");
+			log.info("Corelation ID "+message.getCorrelationID()+" aggregated after "+dur+" ms; "+(messages.size()-1)+" left");
 			messages.remove(key);
 		}
 		

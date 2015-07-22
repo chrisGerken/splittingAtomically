@@ -10,13 +10,11 @@ import kafka.javaapi.PartitionMetadata;
 public class AtomicMessageInfo {
 
 	private String csBrokerList;
-	private int port;
 	
 	public static String topicName = "AtomicMessage01";
 	
-	public AtomicMessageInfo(String csBrokerList, int port) {
+	public AtomicMessageInfo(String csBrokerList) {
 		this.csBrokerList = csBrokerList;
-		this.port = port;
 	}
 
 	public boolean topicExists() {
@@ -30,11 +28,11 @@ public class AtomicMessageInfo {
 	public PartitionInfo[] partitionInfo(String group) {
 		ArrayList<PartitionInfo> info = new ArrayList<>();
 		try {
-			AtomicMessageSimpleConsumer c = new AtomicMessageSimpleConsumer(csBrokerList, port, 0, group);
+			AtomicMessageSimpleConsumer c = new AtomicMessageSimpleConsumer(csBrokerList, 0, group);
 			List<PartitionMetadata> list = c.getMetaData().partitionsMetadata();
 			for (PartitionMetadata pmd : list) {
 				int part = pmd.partitionId();
-				AtomicMessageSimpleConsumer cs = new AtomicMessageSimpleConsumer(csBrokerList, port, part, "ignore");
+				AtomicMessageSimpleConsumer cs = new AtomicMessageSimpleConsumer(csBrokerList, part, "ignore");
 				long first = cs.requestEarliestAvailableOffset();
 				long last = cs.requestLatestAvailableOffset();
 				long offset = cs.retrieveOffset();
@@ -54,13 +52,13 @@ public class AtomicMessageInfo {
 	public void info() {
 		PartitionInfo[] info = partitionInfo();
 		for (PartitionInfo pi : info) {
-			System.out.println("["+pi.getPartition()+"] "+pi.getFirstAvailable()+" --> "+pi.getLastAvaialable()+"; leader: "+pi.getLeaderId()+"; "+pi.getGroupId()+"@"+pi.getCommittedOffset());
+			System.out.println("["+pi.getTopic()+":"+pi.getPartition()+"] "+pi.getFirstAvailable()+" --> "+pi.getLastAvaialable()+"; leader: "+pi.getLeaderId()+"; "+pi.getGroupId()+"@"+pi.getCommittedOffset());
 		}
 	}
 	
 	public static void main(String[] args) {
-		AtomicMessageInfo.topicName = "fred01";
-		AtomicMessageInfo info = new AtomicMessageInfo("172.16.152.132",6667);
+		AtomicMessageInfo.topicName = "fred02";
+		AtomicMessageInfo info = new AtomicMessageInfo("172.16.152.132:6667");
 		info.info();
 		System.out.println("exists: "+info.topicExists());
 	}

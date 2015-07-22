@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.atomsg.bean.Message;
 import org.atomsg.bolt.IMessageWriterBolt;
 import org.atomsg.model.AtomicMessage;
+import org.atomsg.topic.AtomicMessage.AtomicMessageInfo;
 import org.atomsg.topic.AtomicMessage.AtomicMessageProducer;
 
 import backtype.storm.task.TopologyContext;
@@ -42,9 +43,18 @@ public class MessageWriterBoltLogic implements Serializable {
     public void prepare(Map conf, TopologyContext context, IMessageWriterBolt bolt) {
 
 			// Begin prepare() logic 
+ 
+    	String topic = (String) conf.get("atomic.topic");
+    	AtomicMessageInfo.topicName = topic;
 
     	String kafka = (String) conf.get("atomic.kafka");
     	producer = new AtomicMessageProducer(kafka);
+
+    	String brokerList = (String) conf.get("atomic.kafka");
+    	AtomicMessageInfo info = new AtomicMessageInfo(brokerList);
+    	if (!info.topicExists()) {
+    		try { Thread.sleep(1000); } catch(Throwable t) {  } 
+    	}
 
 			// End prepare() logic 
 

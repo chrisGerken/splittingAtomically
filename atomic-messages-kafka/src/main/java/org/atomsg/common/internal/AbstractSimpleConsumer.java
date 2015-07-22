@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 
 import kafka.api.PartitionFetchInfo;
 import kafka.api.PartitionOffsetRequestInfo;
+import kafka.cluster.Broker;
 import kafka.common.ErrorMapping;
 import kafka.common.OffsetMetadataAndError;
 import kafka.common.OffsetOutOfRangeException;
@@ -38,11 +39,8 @@ public class AbstractSimpleConsumer {
 	// List of brokers managing the topic's partitions
 	private List<String> replicaBrokers = new ArrayList<String>();
 	
-	// List of (at least some of the) brokers in the Kafka cluster 
+	// List of (at least some of the) brokers (host:port) in the Kafka cluster 
 	private List<String> seedBrokers = new ArrayList<String>();
-	
-	// The port the brokers listen on
-	private int port;
 
 	// The topic from which to read
 	protected String topic;
@@ -69,7 +67,7 @@ public class AbstractSimpleConsumer {
 	
 	private SimpleConsumer simpleConsumer = null;
 	
-	private String leadBroker = null;
+	private Broker leadBroker = null;
 	
 	private MessageAndOffset nextMessageAndOffset = null;
 	
@@ -93,9 +91,8 @@ public class AbstractSimpleConsumer {
 	// Force the consumer to start reading at the end of the partition
 	private boolean startAtEnd = false;
 	
-	public AbstractSimpleConsumer(String csBrokerList, int port, String topic, int partition, String groupName) {
+	public AbstractSimpleConsumer(String csBrokerList, String topic, int partition, String groupName) {
 		this.seedBrokers = parse(csBrokerList);
-		this.port = port;
 		this.topic = topic;
 		this.partition = partition;
 		this.groupName = groupName;
@@ -202,7 +199,7 @@ public class AbstractSimpleConsumer {
     
     private SimpleConsumer getSimpleConsumer() throws PartitionConsumerException {
     	if (simpleConsumer==null) { 
-    		simpleConsumer = new SimpleConsumer(getLeadBroker(), port, timeout, 64 * 1024, clientName);
+    		simpleConsumer = new SimpleConsumer(getLeadBroker().host(), getLeadBroker().port(), timeout, 64 * 1024, clientName);
     	}
     	return simpleConsumer;
     }
@@ -223,7 +220,7 @@ public class AbstractSimpleConsumer {
     	}
     }
     
-    private String getLeadBroker() throws PartitionConsumerException {
+    private Broker getLeadBroker() throws PartitionConsumerException {
     	if (leadBroker==null) {
     		leadBroker = findNewLeadBroker();
     	}
@@ -333,7 +330,7 @@ public class AbstractSimpleConsumer {
         for (String seed : seedBrokers) {
             SimpleConsumer consumer = null;
             try {
-                consumer = new SimpleConsumer(seed, port, timeout, 64 * 1024, "leaderLookup");
+                consumer = new SimpleConsumer(hostFrom(seed), portFrom(seed), timeout, 64 * 1024, "leaderLookup");
                 List<String> topics = Collections.singletonList(topic);
                 TopicMetadataRequest req = new TopicMetadataRequest(topics);
                 TopicMetadataResponse resp = consumer.send(req);
@@ -351,12 +348,29 @@ public class AbstractSimpleConsumer {
 
     }
  
-    private String findNewLeadBroker() throws PartitionConsumerException {
+    private int portFrom(String seed) {
+    	int index = seed.indexOf(":");
+    	if (index == -1) { return 9092; }
+		try {
+			return Integer.parseInt(seed.substring(index+1));
+		} catch (NumberFormatException e) {
+			
+		}
+		return 9092;
+	}
+
+	private String hostFrom(String seed) {
+    	int index = seed.indexOf(":");
+    	if (index == -1) { return seed; }
+		return seed.substring(0,index);
+	}
+
+	private Broker findNewLeadBroker() throws PartitionConsumerException {
 
         for (String seed : seedBrokers) {
             SimpleConsumer consumer = null;
             try {
-                consumer = new SimpleConsumer(seed, port, timeout, 64 * 1024, "leaderLookup");
+                consumer = new SimpleConsumer(hostFrom(seed), portFrom(seed), timeout, 64 * 1024, "leaderLookup");
                 List<String> topics = Collections.singletonList(topic);
                 TopicMetadataRequest req = new TopicMetadataRequest(topics);
                 TopicMetadataResponse resp = consumer.send(req);
@@ -375,7 +389,7 @@ public class AbstractSimpleConsumer {
                             	throw new PartitionConsumerException("Can't find leader for topic ('"+topic+"') and partition ("+partition+")");
                             }
                             
-                            return part.leader().host();
+                            return part.leader();
                         }
                     }
                 }

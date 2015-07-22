@@ -52,6 +52,10 @@ public class AtomicMessagesTopology {
     		System.out.println("args["+i+"] = "+args[i]);
     	}
      
+    	if (args.length > 0) {
+    		target = args[0];
+    	}
+    	
 //    	if (args.length > 0 && TARGETS.contains(args[0])) {
 //    		target = args[0];
 //        } else if (args.length > 0) {
@@ -59,7 +63,7 @@ public class AtomicMessagesTopology {
 //        	
 //        }
 
-        config = loadConfig(args[0]);
+        config = loadConfig(target);
         
         config.put("atomic.message.group", new Long(System.currentTimeMillis()));
 
